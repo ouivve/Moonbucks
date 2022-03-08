@@ -34,6 +34,10 @@ function App() {
         "beforeend",
         menuItemTemplate(espressoMenuName)
       );
+
+      // 총 메뉴 갯수 count -> li 갯수를 count
+      const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
+      $(".menu-count").innerText = `총 ${menuCount}개`;
     }
   });
 }
