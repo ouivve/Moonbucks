@@ -7,17 +7,12 @@ function App() {
   });
 
   // 메뉴 이름 입력 받기
-  $("#espresso-menu-name").addEventListener("keypress", (e) => {
-    // 엔터키 입력으로 메뉴 추가
-    if (e.key !== "Enter") {
-      return;
-    }
+  const addMenuName = () => {
     // 사용자 입력값이 빈 값이라면 추가되지 않음
     if ($("#espresso-menu-name").value === "") {
       alert("값을 입력해주세요.");
       return;
     }
-
     // 메뉴 이름 받아서 보관
     const espressoMenuName = $("#espresso-menu-name").value;
 
@@ -50,6 +45,19 @@ function App() {
 
     // 메뉴가 추가되고 나면, input은 빈 값으로 초기화
     $("#espresso-menu-name").value = "";
+  };
+
+  // 확인 버튼을 누르면 메뉴가 추가
+  $("#espresso-menu-submit-button").addEventListener("click", (e) => {
+    addMenuName();
+  });
+
+  // 엔터키 입력으로 메뉴 추가
+  $("#espresso-menu-name").addEventListener("keypress", (e) => {
+    if (e.key !== "Enter") {
+      return;
+    }
+    addMenuName();
   });
 }
 
