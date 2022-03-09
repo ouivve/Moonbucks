@@ -6,6 +6,16 @@ function App() {
     e.preventDefault();
   });
 
+  // 메뉴 수정
+  $("#espresso-menu-list").addEventListener("click", (e) => {
+    if (e.target.classList.contains("menu-edit-button")) {
+      const $menuName = e.target.closest("li").querySelector(".menu-name");
+      const menuName = $menuName.innerText;
+      const updatedMenuName = prompt("메뉴명을 수정하세요.", menuName);
+      $menuName.innerText = updatedMenuName;
+    }
+  });
+
   // 메뉴 이름 입력 받기
   const addMenuName = () => {
     // 사용자 입력값이 빈 값이라면 추가되지 않음
