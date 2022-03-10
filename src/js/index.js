@@ -1,33 +1,11 @@
 const $ = (selector) => document.querySelector(selector);
 
 function App() {
-  // form 태그가 자동으로 전송되는 것을 막음
-  $("#espresso-menu-form").addEventListener("submit", (e) => {
-    e.preventDefault();
-  });
-
   // 총 메뉴 갯수 count -> li 갯수를 count
   const updateMenuCount = () => {
     const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
     $(".menu-count").innerText = `총 ${menuCount}개`;
   };
-
-  $("#espresso-menu-list").addEventListener("click", (e) => {
-    // 메뉴 수정
-    if (e.target.classList.contains("menu-edit-button")) {
-      const $menuName = e.target.closest("li").querySelector(".menu-name");
-      const menuName = $menuName.innerText;
-      const updatedMenuName = prompt("메뉴명을 수정하세요.", menuName);
-      $menuName.innerText = updatedMenuName;
-    }
-    // 메뉴 삭제
-    if (e.target.classList.contains("menu-remove-button")) {
-      if (confirm("정말 삭제하시겠습니까?")) {
-        e.target.closest("li").remove();
-      }
-      updateMenuCount();
-    }
-  });
 
   // 메뉴 이름 입력 받기
   const addMenuName = () => {
@@ -69,10 +47,28 @@ function App() {
     $("#espresso-menu-name").value = "";
   };
 
-  // 확인 버튼을 누르면 메뉴가 추가
-  $("#espresso-menu-submit-button").addEventListener("click", (e) => {
-    addMenuName();
+  // 메뉴 이름 수정
+  const updateMenuName = (e) => {
+    const $menuName = e.target.closest("li").querySelector(".menu-name");
+    const menuName = $menuName.innerText;
+    const updatedMenuName = prompt("메뉴명을 수정하세요.", menuName);
+    $menuName.innerText = updatedMenuName;
+  };
+
+  // 메뉴 삭제
+  const removeMenuName = (e) => {
+    if (confirm("정말 삭제하시겠습니까?")) {
+      e.target.closest("li").remove();
+    }
+  };
+
+  // form 태그가 자동으로 전송되는 것을 막음
+  $("#espresso-menu-form").addEventListener("submit", (e) => {
+    e.preventDefault();
   });
+
+  // 확인 버튼을 누르면 메뉴가 추가
+  $("#espresso-menu-submit-button").addEventListener("click", addMenuName);
 
   // 엔터키 입력으로 메뉴 추가
   $("#espresso-menu-name").addEventListener("keypress", (e) => {
@@ -80,6 +76,19 @@ function App() {
       return;
     }
     addMenuName();
+  });
+
+  // 메뉴 수정 및 삭제(이벤트 위임)
+  $("#espresso-menu-list").addEventListener("click", (e) => {
+    // 메뉴 수정
+    if (e.target.classList.contains("menu-edit-button")) {
+      updateMenuName(e);
+    }
+    // 메뉴 삭제
+    if (e.target.classList.contains("menu-remove-button")) {
+      removeMenuName(e);
+      updateMenuCount();
+    }
   });
 }
 
