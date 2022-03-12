@@ -11,6 +11,7 @@ const store = {
 
 function App() {
   // 상태(변할 수 있는 데이터) - 메뉴명
+  this.menu = [];
 
   // 총 메뉴 갯수 count -> li 갯수를 count
   const updateMenuCount = () => {
@@ -27,11 +28,14 @@ function App() {
     }
     // 메뉴 이름 받아서 보관
     const espressoMenuName = $("#espresso-menu-name").value;
-
+    this.menu.push({ name: espressoMenuName });
+    store.setLocalStorage(this.menu);
     // 보관한 값 마크업 추가
-    const menuItemTemplate = (espressoMenuName) => {
-      return `<li class="menu-list-item d-flex items-center py-2">
-          <span class="w-100 pl-2 menu-name">${espressoMenuName}</span>
+    const template = this.menu
+      .map((menuItem) => {
+        return `
+        <li class="menu-list-item d-flex items-center py-2">
+          <span class="w-100 pl-2 menu-name">${menuItem.name}</span>
           <button
             type="button"
             class="bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button"
@@ -45,11 +49,10 @@ function App() {
             삭제
           </button>
         </li>`;
-    };
-    $("#espresso-menu-list").insertAdjacentHTML(
-      "beforeend",
-      menuItemTemplate(espressoMenuName)
-    );
+      })
+      .join("");
+
+    $("#espresso-menu-list").innerHTML = template;
 
     // 총 메뉴 갯수 count -> li 갯수를 count
     updateMenuCount();
@@ -103,4 +106,4 @@ function App() {
   });
 }
 
-App();
+const app = new App();
