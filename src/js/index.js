@@ -32,9 +32,9 @@ function App() {
     store.setLocalStorage(this.menu);
     // 보관한 값 마크업 추가
     const template = this.menu
-      .map((menuItem) => {
+      .map((menuItem, index) => {
         return `
-        <li class="menu-list-item d-flex items-center py-2">
+        <li data-menu-id="${index}" class="menu-list-item d-flex items-center py-2">
           <span class="w-100 pl-2 menu-name">${menuItem.name}</span>
           <button
             type="button"
@@ -63,9 +63,12 @@ function App() {
 
   // 메뉴 이름 수정
   const updateMenuName = (e) => {
+    const menuId = e.target.closest("li").dataset.menuId;
+    console.log(menuId);
     const $menuName = e.target.closest("li").querySelector(".menu-name");
-    const menuName = $menuName.innerText;
-    const updatedMenuName = prompt("메뉴명을 수정하세요.", menuName);
+    const updatedMenuName = prompt("메뉴명을 수정하세요.", $menuName.innerText);
+    this.menu[menuId].name = updatedMenuName;
+    store.setLocalStorage(this.menu);
     $menuName.innerText = updatedMenuName;
   };
 
