@@ -38,7 +38,10 @@
 
 #### 4. localStorage Read & Write
 
-- [x] localStorage에 데이터를 저장한다.
+- [ ] localStorage에 데이터를 저장한다.
+  - [x] 메뉴를 추가할 때
+  - [ ] 메뉴를 수정할 때
+  - [ ] 메뉴를 삭제할 때
 - [ ] localStorage에 있는 데이터를 읽어온다.
 - [ ] 새로고침해도 데이터가 남아있게 한다.
 
