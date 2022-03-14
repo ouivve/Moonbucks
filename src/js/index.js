@@ -26,35 +26,88 @@ function App() {
       // console.log(this.menu);
     }
     render();
+    initEventListeners();
   };
+
+  const initEventListeners = () => {
+    // form 태그가 자동으로 전송되는 것을 막음
+    $("#menu-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+    });
+
+    // 확인 버튼을 누르면 메뉴가 추가
+    $("#menu-submit-button").addEventListener("click", addMenuName);
+
+    // 엔터키 입력으로 메뉴 추가
+    $("#menu-name").addEventListener("keypress", (e) => {
+      if (e.key !== "Enter") {
+        return;
+      }
+      addMenuName();
+    });
+
+    // 카테고리별 메뉴판 관리
+    $("nav").addEventListener("click", (e) => {
+      // 예외처리
+      const isCategoryButton =
+        e.target.classList.contains("cafe-category-name");
+      if (isCategoryButton) {
+        const categoryName = e.target.dataset.categoryName;
+        this.currentCategory = categoryName;
+        $("#category-title").innerText = `${e.target.innerText} 메뉴 관리`;
+        render();
+      }
+    });
+
+    // 메뉴 수정 및 삭제(이벤트 위임), 메뉴 품절
+    $("#menu-list").addEventListener("click", (e) => {
+      // 메뉴 수정
+      if (e.target.classList.contains("menu-edit-button")) {
+        updateMenuName(e);
+        return;
+      }
+      // 메뉴 삭제
+      if (e.target.classList.contains("menu-remove-button")) {
+        removeMenuName(e);
+        updateMenuCount();
+        return;
+      }
+      // 메뉴 품절
+      if (e.target.classList.contains("menu-sold-out-button")) {
+        soldOutMenu(e);
+        return;
+      }
+    });
+  };
+
   // 메뉴 마크업 추가
   const render = () => {
     const template = this.menu[this.currentCategory]
       .map((menuItem, index) => {
         return `
-      <li data-menu-id="${index}" class="menu-list-item d-flex items-center py-2">
-        <span class="w-100 pl-2 menu-name ${
-          menuItem.soldOut ? "sold-out" : ""
-        }">${menuItem.name}</span>
-        <button
-        type="button"
-        class="bg-gray-50 text-gray-500 text-sm mr-1 menu-sold-out-button"
-      >
-        품절
-      </button>
-        <button
-          type="button"
-          class="bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button"
-        >
-          수정
-        </button>
-        <button
-          type="button"
-          class="bg-gray-50 text-gray-500 text-sm menu-remove-button"
-        >
-          삭제
-        </button>
-      </li>`;
+          <li data-menu-id="${index}" class="menu-list-item d-flex items-center py-2">
+            <span class="w-100 pl-2 menu-name ${
+              menuItem.soldOut ? "sold-out" : ""
+            }">${menuItem.name}</span>
+            <button
+            type="button"
+            class="bg-gray-50 text-gray-500 text-sm mr-1 menu-sold-out-button"
+          >
+            품절
+          </button>
+            <button
+              type="button"
+              class="bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button"
+            >
+              수정
+            </button>
+            <button
+              type="button"
+              class="bg-gray-50 text-gray-500 text-sm menu-remove-button"
+            >
+              삭제
+            </button>
+          </li>`;
       })
       .join("");
 
@@ -66,7 +119,7 @@ function App() {
 
   // 총 메뉴 갯수 count -> li 갯수를 count
   const updateMenuCount = () => {
-    const menuCount = $("#menu-list").querySelectorAll("li").length;
+    const menuCount = this.menu[this.currentCategory].length;
     $(".menu-count").innerText = `총 ${menuCount}개`;
   };
 
@@ -94,7 +147,7 @@ function App() {
     const updatedMenuName = prompt("메뉴명을 수정하세요.", $menuName.innerText);
     this.menu[this.currentCategory][menuId].name = updatedMenuName;
     store.setLocalStorage(this.menu);
-    $menuName.innerText = updatedMenuName;
+    render();
   };
 
   // 메뉴 삭제
@@ -103,38 +156,9 @@ function App() {
       const menuId = e.target.closest("li").dataset.menuId;
       this.menu[this.currentCategory].splice(menuId, 1);
       store.setLocalStorage(this.menu);
-      e.target.closest("li").remove();
-      updateMenuCount;
-    }
-  };
-
-  // form 태그가 자동으로 전송되는 것을 막음
-  $("#menu-form").addEventListener("submit", (e) => {
-    e.preventDefault();
-  });
-
-  // 확인 버튼을 누르면 메뉴가 추가
-  $("#menu-submit-button").addEventListener("click", addMenuName);
-
-  // 엔터키 입력으로 메뉴 추가
-  $("#menu-name").addEventListener("keypress", (e) => {
-    if (e.key !== "Enter") {
-      return;
-    }
-    addMenuName();
-  });
-
-  // 카테고리별 메뉴판 관리
-  $("nav").addEventListener("click", (e) => {
-    // 예외처리
-    const isCategoryButton = e.target.classList.contains("cafe-category-name");
-    if (isCategoryButton) {
-      const categoryName = e.target.dataset.categoryName;
-      this.currentCategory = categoryName;
-      $("#category-title").innerText = `${e.target.innerText} 메뉴 관리`;
       render();
     }
-  });
+  };
 
   // 메뉴 품절
   const soldOutMenu = (e) => {
@@ -144,26 +168,6 @@ function App() {
     store.setLocalStorage(this.menu);
     render();
   };
-
-  // 메뉴 수정 및 삭제(이벤트 위임), 메뉴 품절
-  $("#menu-list").addEventListener("click", (e) => {
-    // 메뉴 수정
-    if (e.target.classList.contains("menu-edit-button")) {
-      updateMenuName(e);
-      return;
-    }
-    // 메뉴 삭제
-    if (e.target.classList.contains("menu-remove-button")) {
-      removeMenuName(e);
-      updateMenuCount();
-      return;
-    }
-    // 메뉴 품절
-    if (e.target.classList.contains("menu-sold-out-button")) {
-      soldOutMenu(e);
-      return;
-    }
-  });
 }
 
 const app = new App();
