@@ -118,7 +118,7 @@ function App() {
   };
 
   // 메뉴 이름 입력 받기
-  const addMenuName = () => {
+  const addMenuName = async () => {
     // 사용자 입력값이 빈 값이라면 추가되지 않음
     if ($("#menu-name").value === "") {
       alert("값을 입력해주세요.");
@@ -127,25 +127,29 @@ function App() {
     // 메뉴 이름 받아서 보관
     const menuName = $("#menu-name").value;
     // this.menu[this.currentCategory].push({ name: menuName });
-    fetch(`${BASE_URL}/category/${this.currentCategory}/menu`, {
+    await fetch(`${BASE_URL}/category/${this.currentCategory}/menu`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ name: menuName }),
-    })
+    }).then((response) => {
+      // console.log(response);
+      return response.json();
+    });
+
+    // store.setLocalStorage(this.menu);
+    await fetch(`${BASE_URL}/category/${this.currentCategory}/menu`)
       .then((response) => {
-        // console.log(response);
         return response.json();
       })
       .then((data) => {
-        console.log(data);
+        this.menu[this.currentCategory] = data;
+        // 보관한 값 마크업 추가
+        render();
+        // 메뉴가 추가되고 나면, input은 빈 값으로 초기화
+        $("#menu-name").value = "";
       });
-    store.setLocalStorage(this.menu);
-    // 보관한 값 마크업 추가
-    render();
-    // 메뉴가 추가되고 나면, input은 빈 값으로 초기화
-    $("#menu-name").value = "";
   };
 
   // 메뉴 이름 수정
