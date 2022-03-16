@@ -1,6 +1,8 @@
 import { $ } from "./utils/dom.js";
 import store from "./store/index.js";
 
+const BASE_URL = "http://localhost:3000/api";
+
 function App() {
   // 상태(변할 수 있는 데이터) - 메뉴명
   this.menu = {
@@ -124,7 +126,21 @@ function App() {
     }
     // 메뉴 이름 받아서 보관
     const menuName = $("#menu-name").value;
-    this.menu[this.currentCategory].push({ name: menuName });
+    // this.menu[this.currentCategory].push({ name: menuName });
+    fetch(`${BASE_URL}/category/${this.currentCategory}/menu`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name: menuName }),
+    })
+      .then((response) => {
+        // console.log(response);
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
+      });
     store.setLocalStorage(this.menu);
     // 보관한 값 마크업 추가
     render();
