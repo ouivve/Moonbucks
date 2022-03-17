@@ -8,6 +8,18 @@ const MenuApi = {
     const response = await fetch(`${BASE_URL}/category/${category}/menu`);
     return response.json();
   },
+  async createMenu(category, name) {
+    const response = await fetch(`${BASE_URL}/category/${category}/menu`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name }),
+    });
+    if (!response.ok) {
+      console.error("에러가 발생했습니다. ");
+    }
+  },
 };
 
 function App() {
@@ -47,7 +59,7 @@ function App() {
     });
 
     // 카테고리별 메뉴판 관리
-    $("nav").addEventListener("click", (e) => {
+    $("nav").addEventListener("click", async (e) => {
       // 예외처리
       const isCategoryButton =
         e.target.classList.contains("cafe-category-name");
@@ -55,6 +67,9 @@ function App() {
         const categoryName = e.target.dataset.categoryName;
         this.currentCategory = categoryName;
         $("#category-title").innerText = `${e.target.innerText} 메뉴 관리`;
+        this.menu[this.currentCategory] = await MenuApi.getAllMenuByCategory(
+          this.currentCategory
+        );
         render();
       }
     });
@@ -133,15 +148,7 @@ function App() {
 
     const menuName = $("#menu-name").value;
 
-    await fetch(`${BASE_URL}/category/${this.currentCategory}/menu`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name: menuName }),
-    }).then((response) => {
-      return response.json();
-    });
+    await MenuApi.createMenu(this.currentCategory, menuName);
 
     this.menu[this.currentCategory] = await MenuApi.getAllMenuByCategory(
       this.currentCategory
